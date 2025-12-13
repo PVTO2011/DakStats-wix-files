@@ -1,0 +1,1024 @@
+<HTML xmlns:ms="urn:schemas-microsoft-com:xslt" xmlns:dt="urn:schemas-microsoft-com:datatypes">
+<HEAD>
+<META http-equiv="Content-Type" content="text/html">
+<META HTTP-EQUIV="REFRESH" CONTENT="30">
+<STYLE TYPE="text/css">
+					IMG#DakStatsImage {border-width:0px;margin:0px;padding:0px;}
+					TD {font-size:11px;font-family:Arial, Verdana, serif;}
+					BODY {font-size:11px;font-family:Arial, Verdana, serif;}
+
+					P#PageHeader	{white-space:nowrap;font-size:20px;font-weight:bold;border:0px;margin-left:10px;display:inline;}
+					DIV#PageHeader	{white-space:nowrap;font-size:20px;font-weight:bold;border:0px;margin-left:10px;display:inline;}
+					TD#Header	{white-space:nowrap;font-size:10px;font-weight:bold;border:0px;margin-left:10px;display:inline;}
+
+					HR {width:400px;text-align:left;}
+					DIV#Copyright {white-space:nowrap;font-size:11px;font-family:Arial, Verdana, serif;}
+
+					TR.Header {background-color:#000088;color:white;text-align:center;font-weight:bold;}
+					TR.Footer {font-weight:bold;}
+					TR.AltRow {background-color:#E0E0E0;}
+					TR.InGameRow {background-color:aqua;}
+					DIV.InGameRow {background-color:aqua;white-space:pre;display:inline;}
+
+					DIV#PbpHeader {font-weight:bold;display:inline;}
+					A#LinkPbp {font-size:11px;}
+					IFRAME {width=+100%;height=120;}
+
+					TABLE#Content {width:+100%;}
+					TABLE#Content TABLE{width:+100%;border:0px;margin:0px;padding:0px;}
+					TABLE#Content TD {border:0px;margin:0px;padding:0px;}
+					TABLE#Content TR {border:0px;margin:0px;padding:0px;}
+					TABLE#Content TD#ScreenSizeTip {white-space:nowrap;font-size:11px;}
+
+					TABLE#TeamStats TD {text-align:center;white-space:nowrap;}
+					TABLE#TeamStats TD.TeamStatCaption {font-weight:bold;}
+
+					TABLE#LineScore TD {text-align:center;white-space:nowrap;}
+					TABLE#LineScore TD.LineScoreStatField {width:+8%;font-weight:bold;font-size:15px;}
+					TABLE#LineScore TD.LineScoreTeam {width:+10%;font-weight:bold;font-size:15px;}
+					TD#PlayClock {white-space:nowrap;width:+10%;background-color:transparent;font-weight:bold;font-size:20px;}
+
+					TABLE#RosterContainer TD {white-space:nowrap;}
+					TABLE#RosterContainer TD.JerseyNumber {text-align:right;}
+					TABLE#RosterContainer TD.StatField {width:+8%;text-align:right;white-space:nowrap;}
+					TABLE#RosterContainer TD.StatFieldEmpty {width:+8%;text-align:right;}
+
+					TD#TeamStatsContainer {width=+50%;}
+					TD#LineScoreContainer {width=+50%;}
+					TD#PbpContainer {width=+50%;}
+					TD#RosterHome {width=+50%;}
+					TD#RosterVisitor {width=+50%;}
+					
+					SELECT.rosters {font-size:11px;}
+					SPAN.info	{font-size:11px;text-align:center;white-space:nowrap;position:relative;left:+4;}
+				</STYLE><SCRIPT LANGUAGE="JavaScript">//<--
+					var ShotsAll = '1,455,255,4,0,58,50 1,434,252,4,0,101,58 1,429,259,4,0,59,560 1,395,255,2,0,80,254 1,306,252,3,0,139,207 1,267,252,3,4,103,442 1,229,259,4,0,246,486 1,217,254,2,0,159,130 1,211,135,2,0,84,335 1,200,252,2,0,114,294 1,196,251,2,0,85,322 1,165,252,4,0,280,146 1,125,147,4,0,41,542 1,69,139,2,0,74,222 1,57,259,2,0,152,376 1,47,248,2,0,99,186 1,42,255,2,0,81,301 ';
+					var PlrIdG = new Array("19","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","")
+					var PlrNameG = new Array("TEAM","Scagel","O'Brien","Tisdell","Bell","Slysz","Jagodzinski","Higuera","Place","Dihn","Frew","Barrett","Place","Place","Williams","Fournier","")
+					var PlrIdH = new Array("17","248","249","250","251","252","253","254","255","256","257","258","259","")
+					var PlrNameH = new Array("TEAM","De Alba","Frenkel Hassan","Cunniffe","Vu","Ciccarelli","Dorjee","Morales-Fernandez","Robinson","Morocho","Dunbar-Robinson","Woodard-Mcniff","Skouta","")
+					var ShotsG = new Array;
+					var ShotsH = new Array;
+
+					// get roster name
+					function GetRosterName( team, id )
+					{
+						if( team == 'H' )
+						{
+							for( var n=0; n < PlrIdH.length; n++ )
+							{
+								if( PlrIdH[n] == id )
+									return PlrNameH[n];
+							}
+						}
+						else
+						{
+							for( var n=0; n < PlrIdG.length; n++ )
+							{
+								if( PlrIdG[n] == id )
+									return PlrNameG[n];
+							}
+						}
+						
+						return "";
+					}
+
+					// show the shot detail on the panel.
+					function showtip( team, time, type, extra, rosterID )
+					{
+						var sTeam = "";
+						if( team == 0 )
+							sTeam = 'H';
+						else
+							sTeam = 'G';
+
+						var min = parseInt(time/60);
+						var sec = parseInt(time%60);
+						var info = "";
+						if( min < 10 )
+							info += "0";
+						info += min + ":";
+						
+						if( sec < 10 )
+							info += "0";
+						info += sec;
+						if( type == 3 )	// 2pt made.
+						{
+							info += ' FG made by ' + GetRosterName( sTeam, rosterID );
+						}
+						else if( type == 5 )	// 3pt made.
+						{
+							info += ' 3pt FG made by ' + GetRosterName( sTeam, rosterID );
+						}
+						else if( type == 2 )	// 2pt miss
+						{
+							info += ' FG missed by ' + GetRosterName( sTeam, rosterID );
+						}
+						else if( type == 4 )	// 3pt miss
+						{
+							info += ' 3pt FG missed by ' + GetRosterName( sTeam, rosterID );
+						}
+						else if( type == 6 )	// 2pt block
+						{
+							info += ' FG by ' + GetRosterName( sTeam, rosterID ) + ' blocked';
+						}
+						else if( type == 7 )	// 3pt block
+						{
+							info += ' 3pt FG by ' + GetRosterName( sTeam, rosterID ) + ' blocked';
+						}
+
+						// sum the extra type data
+						if( extra == 1 || extra == 3 )
+						{
+							info += ' [FstBrk]'
+						}
+						else if( extra == 5 || extra == 7 )
+						{
+							info += ' [OffTov, FstBrk]'
+						}
+						else if( extra == 4 || extra == 6 )
+						{
+							info += ' [OffTov]'
+						}
+						else if( extra == 8 || extra == 10 )
+						{
+							info += ' [2ndCh]'
+						}
+						else if( extra == 9 || extra == 11 )
+						{
+							info += ' [2ndCh, FstBrk]'
+						}
+						else if( extra == 12 || extra == 14 )
+						{
+							info += ' [2ndCh, OffTov]'
+						}
+						else if( extra == 13 || extra == 15 )
+						{
+							info += ' [2ndCh, OffTov, FstBrk]'
+						}
+
+						if( document.all )
+						{
+							document.all['tipholder'].innerHTML = info;
+						}
+						else
+						{
+							document.getElementById("tipholder").innerHTML = info;
+						}
+					}
+					
+					function hidetip()
+					{
+						if( document.all )
+						{
+							document.all['tipholder'].innerHTML = "mouse over a shot to view the details.";
+						}
+						else
+						{
+							document.getElementById("tipholder").innerHTML = "mouse over a shot to view the details.";
+						}
+					}
+
+					function Draw( team )
+					{
+						period = document.shotchat.periods.options[document.shotchat.periods.selectedIndex].value;
+
+						var rosterID = 0;
+						if( team == 'H' )
+						{
+							rosterID = document.shotchat.h_rosters.options[document.shotchat.h_rosters.selectedIndex].value;
+						}
+						else
+						{
+							rosterID = document.shotchat.g_rosters.options[document.shotchat.g_rosters.selectedIndex].value;
+						}
+
+						if( rosterID == 0 )
+							DrawTotal( period, team );
+						else if( rosterID == 1 )
+							DrawLast10( period, team );
+						else
+							DrawRosterShots( period, team, rosterID );
+					}
+
+					function DrawTotal( period, team )
+					{
+						var shots = "";
+						var x = 0;
+						var y = 0;
+						if( team == 'H' )
+						{
+							for(var n=0; n < ShotsH.length; n++ )
+							{
+								x = parseInt(ShotsH[n][6]/4);
+								y = parseInt(ShotsH[n][5]/4);
+								if( ShotsH[n][0] == period && (x != 0 || y != 0))
+								{
+									x = 180 + 150 - x;
+									y += 188;
+									if( ShotsH[n][3] == 3 || ShotsH[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 2 || ShotsH[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 6 || ShotsH[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["h_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("h_shots").innerHTML = shots;
+							}
+						}
+						else
+						{
+							for(var n=0; n < ShotsG.length; n++ )
+							{
+								x = parseInt(ShotsG[n][6]/4);
+								y = parseInt(ShotsG[n][5]/4);
+								if( ShotsG[n][0] == period && (x != 0 || y != 0))
+								{
+									x = 160 - x;
+									y += 188;
+									if( ShotsG[n][3] == 3 || ShotsG[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 2 || ShotsG[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 6 || ShotsG[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["g_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("g_shots").innerHTML = shots;
+							}
+						}
+					}
+
+					function DrawLast10( period, team )
+					{
+						var shots = "";
+						var x = 0;
+						var y = 0;
+						var count = 0;
+						if( team == 'H' )
+						{
+							for(var n=ShotsH.length-1; n >= 0; n-- )
+							{
+								x = parseInt(ShotsH[n][6]/4);
+								y = parseInt(ShotsH[n][5]/4);
+								if( count < 10 && ShotsH[n][0] == period && (x != 0 || y != 0))
+								{
+									count++;
+									x = 180 + 150 - x;
+									y += 188;
+									if( ShotsH[n][3] == 3 || ShotsH[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 2 || ShotsH[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 6 || ShotsH[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["h_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("h_shots").innerHTML = shots;
+							}
+						}
+						else
+						{
+							for(var n=ShotsG.length-1; n >= 0; n-- )
+							{
+								x = parseInt(ShotsG[n][6]/4);
+								y = parseInt(ShotsG[n][5]/4);
+								if( count < 10 && ShotsG[n][0] == period && (x != 0 || y != 0))
+								{
+									count++;
+									x = 160 - x;
+									y += 188;
+									if( ShotsG[n][3] == 3 || ShotsG[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 2 || ShotsG[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 6 || ShotsG[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["g_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("g_shots").innerHTML = shots;
+							}
+						}
+					}
+
+					function DrawRosterShots( period, team, rosterID )
+					{
+						var shots = "";
+						var x = 0;
+						var y = 0;
+						var info = "";
+						if( team == 'H' )
+						{
+							for(var n=0; n < ShotsH.length; n++ )
+							{
+								x = parseInt(ShotsH[n][6]/4);
+								y = parseInt(ShotsH[n][5]/4);
+								if( ShotsH[n][2] == rosterID && ShotsH[n][0] == period && (x != 0 || y != 0))
+								{
+									x = 180 + 150 - x;
+									y += 188;
+									if( ShotsH[n][3] == 3 || ShotsH[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 2 || ShotsH[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsH[n][3] == 6 || ShotsH[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(0,'+ShotsH[n][1]+','+ShotsH[n][3]+','+ShotsH[n][4]+','+ShotsH[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["h_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("h_shots").innerHTML = shots;
+							}
+						}
+						else
+						{
+							for(var n=0; n < ShotsG.length; n++ )
+							{
+								x = parseInt(ShotsG[n][6]/4);
+								y = parseInt(ShotsG[n][5]/4);
+								if( ShotsG[n][2] == rosterID && ShotsG[n][0] == period && (x != 0 || y != 0))
+								{
+									x = 160 - x;
+									y += 188;
+									if( ShotsG[n][3] == 3 || ShotsG[n][3] == 5 )	// 2pt made; 3pt made.
+									{
+										shots += '<IMG src="BBOrange.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 2 || ShotsG[n][3] == 4 )	// 2pt miss; 3pt miss
+									{
+										shots += '<IMG src="BBWhite.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+									else if( ShotsG[n][3] == 6 || ShotsG[n][3] == 7 )	// 2pt block; 3pt block
+									{
+										shots += '<IMG src="BBBlock.gif" style="Z-INDEX:10;POSITION:absolute;TOP:' + y + 'px;LEFT:' + x + 'px;" onMouseOver="showtip(1,'+ShotsG[n][1]+','+ShotsG[n][3]+','+ShotsG[n][4]+','+ShotsG[n][2]+');" onMouseOut="hidetip();">';
+									}
+								}
+							}
+
+							if( document.all )
+							{
+								document.all["g_shots"].innerHTML = shots;
+							}
+							else
+							{
+								document.getElementById("g_shots").innerHTML = shots;
+							}
+						}
+					}
+
+					// Draw shots for both team.
+					function DrawAll()
+					{
+						Draw( 'G' );
+						Draw( 'H' );
+					}
+					
+					//Draw shots
+					function IsHome( id )
+					{
+						for( var n=0; n < PlrIdH.length; n++ )
+						{
+							if( PlrIdH[n] == id )
+								return 1;
+						}
+
+						return 0;
+					}
+
+					// set the period as the latest period.
+					function SetPeriod()
+					{
+						var index = '1';
+						var maxPeriod = '4';
+						
+						var curPeriod = 0;
+						if( maxPeriod == 2 )
+						{
+							if( index == 1 )		curPeriod = 0;
+							else if( index == 2 )	curPeriod = 1;
+							else					curPeriod = 3;
+						}
+						else if(maxPeriod == 4 )
+						{
+							if( index == 1 || index == 2 )		curPeriod = 0;
+							else if( index == 3 || index == 4 )	curPeriod = 1;
+							else								curPeriod = 3;
+						}
+						
+						document.shotchat.periods.selectedIndex = curPeriod;
+					}
+					
+					//Sort shots into teams and periods
+					function Init()
+					{
+						// init shots.
+						var Shots = ShotsAll.split(' ');
+						var temp = new Array();
+						for(var n=0; n < Shots.length; n++)
+						{
+							temp[n] = Shots[n].split(',');
+							if ( IsHome(temp[n][2]) )
+							{
+								ShotsH[ShotsH.length] = temp[n];
+							}
+							else
+							{
+								ShotsG[ShotsG.length] = temp[n];
+							}
+						}
+						
+						// set curPeriod.
+						SetPeriod();
+						
+						// draw all the shots for current period.
+						DrawAll();
+					}
+
+					// initialize the common arrays onload.
+					window.onload = Init;
+
+					//--></SCRIPT><TITLE>DakStats Webcast by Daktronics, Inc.</TITLE>
+</HEAD>
+<BODY>
+<TABLE ID="Content">
+<TR VALIGN="TOP"><DIV style="white-space:nowrap;font-size:20px;font-family:Arial, Verdana;font-weight:bold" align="CENTER">Smith G vs. Amherst G</DIV></TR>
+<TR VALIGN="TOP">
+<TD width="+50%">
+<TABLE>
+<TR VALIGN="LEFT">
+<TD><A HREF="http://www.dakstats.com"><IMG SRC="weblogo.gif" ID="DakStatsImage" align="left"></A></TD>
+<TD ID="Header"><div style="POSITION:absolute;left:190;top:50;white-space:nowrap;text-align:left;margin:0px;padding:0px;">Scores, stats and play-by-play</div>
+<div style="POSITION:absolute;left:190;top:62;white-space:nowrap;text-align:left;margin:0px;padding:0px;">updated every 30 seconds.</div>
+<div style="POSITION:absolute;left:190;top:74;white-space:nowrap;text-align:left;margin:0px;padding:0px;">Game Date: 12/20/2025</div>
+<div style="POSITION:absolute;left:190;top:86;white-space:nowrap;text-align:left;margin:0px;padding:0px;">Updated: 06:20 PM EST</div>
+</TD>
+</TR>
+<TR><TD COLSPAN="2"><TABLE ID="LineScore">
+<THEAD>
+<TR CLASS="Header">
+<TD>Score</TD>
+<TD>1</TD>
+<TD>Total</TD>
+<TD>Clock</TD>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD CLASS="LineScoreTeam">SMT</TD>
+<TD CLASS="LineScoreStatField">6</TD>
+<TD CLASS="LineScoreStatField">6</TD>
+<TD ROWSPAN="2" ID="PlayClock" VALIGN="CENTER">00:23</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="LineScoreTeam">AHG</TD>
+<TD CLASS="LineScoreStatField">4</TD>
+<TD CLASS="LineScoreStatField">4</TD>
+</TR>
+</TBODY>
+</TABLE>
+</TD></TR>
+</TABLE>
+<TABLE>
+<TR>
+<TD>
+<FORM name="shotchat">
+<DIV><SPAN class="info"><SELECT class="rosters" name="periods" OnChange="DrawAll()"><OPTION value="1">half 1</OPTION>
+<OPTION value="2">half 2</OPTION>
+<OPTION value="3">OT</OPTION></SELECT><SPAN ID="tipholder" class="info">mouse over a shot to view the details.</SPAN></SPAN></DIV>
+<DIV style="white-space:nowrap;"><SPAN ID="guest"><IMG ID="g_chat" src="BBHalfCourt_19ft_9inches.jpg" height="141" width="150" style="POSITION:relative;TOP:+3;"><SPAN ID="g_shots"></SPAN></SPAN><SPAN><IMG src="BBLegend.gif" height="141" width="13" style="POSITION:relative;left:+3;TOP:+3;"></SPAN><SPAN ID="home"><IMG ID="h_chat" src="BBHalfCourt_19ft_9inches.jpg" height="141" width="150" style="POSITION:relative;left:+6;TOP:+3;"><SPAN ID="h_shots"></SPAN></SPAN></DIV>
+<DIV><SPAN><SELECT class="rosters" name="g_rosters" OnChange="Draw('G')" style="POSITION:absolute;left:15px;top:341;width=150;"><OPTION value="0">Smith G</OPTION>
+<OPTION value="1">Last 10 Shots</OPTION>
+<OPTION value="133"> 1 Scagel</OPTION><OPTION value="142"> 2 Frew</OPTION><OPTION value="141"> 3 Dihn</OPTION><OPTION value="137"> 4 Slysz</OPTION><OPTION value="138"> 5 Jagodzinski</OPTION><OPTION value="136">10 Bell</OPTION><OPTION value="145">12 Place</OPTION><OPTION value="139">13 Higuera</OPTION><OPTION value="147">15 Fournier</OPTION><OPTION value="144">21 Place</OPTION><OPTION value="134">22 O'Brien</OPTION><OPTION value="143">23 Barrett</OPTION><OPTION value="135">24 Tisdell</OPTION><OPTION value="140">25 Place</OPTION><OPTION value="146">32 Williams</OPTION></SELECT></SPAN><SPAN><SELECT class="rosters" name="h_rosters" OnChange="Draw('H')" style="POSITION:absolute;left:183;top:341;width=150;"><OPTION value="0">Amherst G</OPTION>
+<OPTION value="1">Last 10 Shots</OPTION>
+<OPTION value="248"> 2 De Alba</OPTION><OPTION value="249"> 3 Frenkel Hassan</OPTION><OPTION value="250"> 4 Cunniffe</OPTION><OPTION value="251"> 5 Vu</OPTION><OPTION value="252">10 Ciccarelli</OPTION><OPTION value="253">11 Dorjee</OPTION><OPTION value="254">12 Morales-Fernandez</OPTION><OPTION value="255">13 Robinson</OPTION><OPTION value="256">15 Morocho</OPTION><OPTION value="257">22 Dunbar-Robinson</OPTION><OPTION value="258">24 Woodard-Mcniff</OPTION><OPTION value="259">42 Skouta</OPTION></SELECT></SPAN></DIV>
+</FORM>
+</TD>
+</TR>
+</TABLE>
+</TD>
+<TD width="+50%">
+<TABLE>
+<TR><TD>
+<TABLE ID="TeamStats">
+<THEAD>
+<TR CLASS="Header">
+<TD>Smith G</TD>
+<TD>Team Stats</TD>
+<TD>Amherst G</TD>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD CLASS="StatField">.00 (0 - 3)</TD>
+<TD CLASS="TeamStatCaption">Field Goal %</TD>
+<TD CLASS="StatField">14.29 (2 - 14)</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="StatField">.00 (0 - 1)</TD>
+<TD CLASS="TeamStatCaption">Three %</TD>
+<TD CLASS="StatField">.00 (0 - 5)</TD>
+</TR>
+<TR>
+<TD CLASS="StatField">75.00 (6 - 8)</TD>
+<TD CLASS="TeamStatCaption">Free Throw %</TD>
+<TD CLASS="StatField">0 (0 - 0)</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="StatField">7 (1 - 6)</TD>
+<TD CLASS="TeamStatCaption">Rebounds (O - D)</TD>
+<TD CLASS="StatField">10 (6 - 4)</TD>
+</TR>
+<TR>
+<TD CLASS="StatField">7</TD>
+<TD CLASS="TeamStatCaption">Turnovers</TD>
+<TD CLASS="StatField">6</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="StatField">2</TD>
+<TD CLASS="TeamStatCaption">Steals</TD>
+<TD CLASS="StatField">3</TD>
+</TR>
+<TR>
+<TD CLASS="StatField">2</TD>
+<TD CLASS="TeamStatCaption">Team Fouls</TD>
+<TD CLASS="StatField">6</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="StatField">Higuera( 5 )</TD>
+<TD CLASS="TeamStatCaption">Scoring Leader</TD>
+<TD CLASS="StatField">Ciccarelli( 4 )</TD>
+</TR>
+<TR>
+<TD CLASS="StatField">Tisdell( 2 )</TD>
+<TD CLASS="TeamStatCaption">Rebounding Leader</TD>
+<TD CLASS="StatField">Morales-Fernandez( 4 )</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="StatField">0</TD>
+<TD CLASS="TeamStatCaption">Bench Scoring</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+</TBODY>
+</TABLE>
+<DIV ID="PbpHeader">Play-by-Play </DIV><A ID="LinkPbp" target="_blank" HREF="BB_0_0_12202025_M_1_pbp.html">(Full)</A><br><IFRAME WIDTH="100%" SRC="BB_0_0_12202025_M_1_pbp.html"></IFRAME>
+</TD></TR>
+</TABLE>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN="2"><TABLE ID="RosterContainer">
+<TBODY>
+<TR>
+<TD VALIGN="TOP" ID="RosterHome">
+<TABLE CLASS="RosterStats">
+<THEAD>
+<TR CLASS="Header">
+<TD COLSPAN="2">Smith G</TD>
+</TR>
+<TR CLASS="Header">
+<TD>No.</TD>
+<TD>Name</TD>
+<TD>FG</TD>
+<TD>3PT</TD>
+<TD>FT</TD>
+<TD>Reb</TD>
+<TD>A</TD>
+<TD>F</TD>
+<TD>Pts</TD>
+</TR>
+</THEAD>
+<TBODY>
+<TR>
+<TD CLASS="JerseyNumber"> 1</TD>
+<TD CLASS="PlayerName">Scagel, Anna</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">1-2</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">1</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber"> 2</TD>
+<TD CLASS="PlayerName">Frew, Deana</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber"> 3</TD>
+<TD CLASS="PlayerName">Dihn, Nhu</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber"> 4</TD>
+<TD CLASS="PlayerName">Slysz, Natay</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber"> 5</TD>
+<TD CLASS="PlayerName">Jagodzinski, Sophia</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">10</TD>
+<TD CLASS="PlayerName">Bell, Maya</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber">12</TD>
+<TD CLASS="PlayerName">Place, Nina</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">13</TD>
+<TD CLASS="PlayerName">Higuera, Vivian</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">5-6</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">5</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">15</TD>
+<TD CLASS="PlayerName">Fournier, Addison</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">21</TD>
+<TD CLASS="PlayerName">Place, Emily</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">22</TD>
+<TD CLASS="PlayerName">O'Brien, Molly</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">23</TD>
+<TD CLASS="PlayerName">Barrett, Madelyn</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">24</TD>
+<TD CLASS="PlayerName">Tisdell, Emma</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">2</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">25</TD>
+<TD CLASS="PlayerName">Place, Jayden</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber">32</TD>
+<TD CLASS="PlayerName">Williams, Summer</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+</TBODY>
+<TFOOT>
+<TR CLASS="Footer">
+<TD></TD>
+<TD CLASS="TotalRowLeader">Totals:</TD>
+<TD CLASS="StatField">0-3</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">6-8</TD>
+<TD CLASS="StatField">7</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">2</TD>
+<TD CLASS="StatField">6</TD>
+</TR>
+</TFOOT>
+</TABLE>
+</TD>
+<TD></TD>
+<TD VALIGN="TOP" ID="RosterVisitor">
+<TABLE CLASS="RosterStats">
+<THEAD>
+<TR CLASS="Header">
+<TD COLSPAN="2">Amherst G</TD>
+</TR>
+<TR CLASS="Header">
+<TD>No.</TD>
+<TD>Name</TD>
+<TD>FG</TD>
+<TD>3PT</TD>
+<TD>FT</TD>
+<TD>Reb</TD>
+<TD>A</TD>
+<TD>F</TD>
+<TD>Pts</TD>
+</TR>
+</THEAD>
+<TBODY>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber"> 2</TD>
+<TD CLASS="PlayerName">De Alba, Mariah Leeann</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber"> 3</TD>
+<TD CLASS="PlayerName">Frenkel Hassan, Simone</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber"> 4</TD>
+<TD CLASS="PlayerName">Cunniffe, Kiera</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">3</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber"> 5</TD>
+<TD CLASS="PlayerName">Vu, Diep</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">10</TD>
+<TD CLASS="PlayerName">Ciccarelli, Nina</TD>
+<TD CLASS="StatField">2-5</TD>
+<TD CLASS="StatField">0-2</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">4</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">11</TD>
+<TD CLASS="PlayerName">Dorjee, Namdol</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber">12</TD>
+<TD CLASS="PlayerName">Morales-Fernandez, Aliya</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">4</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">2</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">13</TD>
+<TD CLASS="PlayerName">Robinson, Ruth</TD>
+<TD CLASS="StatField">0-3</TD>
+<TD CLASS="StatField">0-1</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">2</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR>
+<TD CLASS="JerseyNumber">15</TD>
+<TD CLASS="PlayerName">Morocho, Giselle</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="AltRow">
+<TD CLASS="JerseyNumber">22</TD>
+<TD CLASS="PlayerName">Dunbar-Robinson, Jordan</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+<TD CLASS="StatFieldEmpty">-</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">24</TD>
+<TD CLASS="PlayerName">Woodard-Mcniff, Scarlett</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+<TR CLASS="InGameRow">
+<TD CLASS="JerseyNumber">42</TD>
+<TD CLASS="PlayerName">Skouta, Iman</TD>
+<TD CLASS="StatField">0-3</TD>
+<TD CLASS="StatField">0-2</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">0</TD>
+<TD CLASS="StatField">0</TD>
+</TR>
+</TBODY>
+<TFOOT>
+<TR CLASS="Footer">
+<TD></TD>
+<TD CLASS="TotalRowLeader">Totals:</TD>
+<TD CLASS="StatField">2-14</TD>
+<TD CLASS="StatField">0-5</TD>
+<TD CLASS="StatField">0-0</TD>
+<TD CLASS="StatField">10</TD>
+<TD CLASS="StatField">1</TD>
+<TD CLASS="StatField">6</TD>
+<TD CLASS="StatField">4</TD>
+</TR>
+</TFOOT>
+</TABLE>
+</TD>
+</TR>
+</TBODY>
+<TFOOT>
+<TR>
+<TD COLSPAN="3"><P><DIV CLASS="InGameRow">Highlight </DIV> = Currently In The Game</P></TD>
+</TR>
+</TFOOT>
+</TABLE>
+</TD>
+</TR>
+<TR CLASS="ScreenSizeTip">
+<TD COLSPAN="2">Internet Explorer Tip:  Press F11 (or click the View | Full screen menu option)</TD>
+</TR>
+<TR CLASS="ScreenSizeTip">
+<TD>on your keyboard to switch between full screen webcast and partial screen webcast.</TD>
+</TR>
+</TABLE>
+<HR>
+<DIV ID="Copyright">Statistics provided by DakStats&#174; 3000 Webcast<BR>Copyright &#169; 2002-2003 Daktronics, Inc.<BR>All Rights Reserved</DIV>
+</BODY>
+</HTML>
